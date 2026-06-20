@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artwork</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #ffffff;
+            /* Updated to match the glowing gold base */
+            --accent: #ffd700; 
+            --border: #333;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Varela Round', sans-serif;
+            margin: 0;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        /* VIBRANT GLOWING GOLD WITH NEON STREAKS & SWIRLS */
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(
+                120deg, 
+                #ffd700 0%, 
+                #ffb700 20%, 
+                #b76e79 40%, /* Rose Gold Streak */
+                #ff66cc 50%, /* Pink Neon Streak */
+                #b76e79 60%, /* Rose Gold Streak */
+                #ffd700 80%, 
+                #ffd700 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: swirlStreaks 4s linear infinite;
+            filter: drop-shadow(0 0 2px rgba(255,215,0,0.6));
+            /* Multi-layered neon glow text shadow */
+            text-shadow: 
+                0 0 5px rgba(255, 215, 0, 0.5),
+                0 0 15px rgba(183, 110, 121, 0.6),
+                0 0 30px rgba(255, 102, 204, 0.4);
+        }
+
+        /* TEXT ANIMATION FOR SWIRLS/STREAKS */
+        @keyframes swirlStreaks {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .artwork-image {
+            width: 100%;
+            max-width: 1000px;
+            display: block;
+            margin: 30px auto;
+            border: 4px solid white;
+            border-radius: 20px;
+        }
+        .audio-wrapper {
+            width: 100%;
+            max-width: 760px;
+            margin: 30px auto;
+            background: var(--card);
+            border: 4px solid var(--accent);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 8px 8px 0px white;
+        }
+        .audio-wrapper iframe {
+            width: 100%;
+            border: none;
+            display: block;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            border: 2px solid white;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-family: 'Fredoka One', cursive;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+/* ===== LIKE SYSTEM ===== */
+
+.like-section {
+    position: relative;
+    margin: 25px auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    padding: 10px 25px;
+    border-radius: 30px;
+    border: 2px solid #333;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform .2s cubic-bezier(.175,.885,.32,1.275);
+    outline: none;
+    padding: 0;
+    user-select: none;
+}
+
+.like-btn:active {
+    transform: scale(1.4);
+}
+
+.like-count {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    color: white;
+    min-width: 30px;
+}
+
+.floating-heart {
+    position: absolute;
+    bottom: 50%;
+    left: 25px;
+    font-size: 24px;
+    pointer-events: none;
+    user-select: none;
+    animation: popAndFloat 2.8s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes popAndFloat {
+
+    0% {
+        transform: translate(0,0) scale(.5);
+        opacity:0;
+    }
+
+    15% {
+        opacity:1;
+        transform:
+            translate(var(--x-burst),var(--y-burst))
+            scale(1.3);
+    }
+
+    100% {
+        transform:
+            translate(var(--x-float),var(--y-float))
+            scale(.8)
+            rotate(var(--rot));
+        opacity:0;
+    }
+
+}
+    </style>
+</head>
+<body>
+<a href="javascript:history.back()" class="back-btn">
+⬅
+</a>
+<div class="like-section">
+    <button id="heartBtn" class="like-btn"> ❤️</button>
+    <span id="likeCount" class="like-count">0</span>
+</div>
+
+
+    <h1 id="title">Artwork</h1>
+    <img id="artImage" class="artwork-image" src="">
+    
+    <div class="audio-wrapper">
+        <iframe id="songFrame" width="760" height="240" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    </div>
+    
+    <p id="description"></p>
+
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    onValue,
+    runTransaction
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCOI5JcNJ0PfOoYQeZm6iuX_QIC6GthiiI",
+
+authDomain:
+"rainingdownonme-62fa1.firebaseapp.com",
+
+databaseURL:
+"https://rainingdownonme-62fa1-default-rtdb.firebaseio.com",
+
+projectId:
+"rainingdownonme-62fa1",
+
+storageBucket:
+"rainingdownonme-62fa1.firebasestorage.app",
+
+messagingSenderId:
+"346919530222",
+
+appId:
+"1:346919530222:web:d30bcfe9ca31e9c972cdff",
+
+measurementId:
+"G-692M1NK1XG"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+
+const artworkData = {
+
+1: {
+title: "Raining Down On Me",
+image: "image1.png",
+description: "Description.",
+song: "https://suno.com/embed/a7222d21-fd9d-4103-87c4-245fdf83e669"
+},
+
+2: {
+title: "Lips Like Rose Petals",
+image: "image2.png",
+description: "Description.",
+song: "https://suno.com/embed/f7a130c9-076b-4114-91db-05696660e7d8"
+},
+
+3: { 
+title: "Empty Hands",
+image: "image3.png",
+description: "Description.",
+song: "https://suno.com/embed/aaa0f644-b18b-4916-8061-3832d17fe8ea"
+},
+
+4: {
+title: "Can You Have My All?",
+image: "image4.png",
+description: "Description.",
+song: "https://suno.com/embed/e0832eed-1e4b-492d-a631-de8587ed3390"
+},
+
+5: {
+title: "Magnificent",
+image: "image5.png",
+description: "Description.",
+song: "https://suno.com/embed/57898bae-9434-44b2-aa1e-31beadfb5c4f"
+},
+
+6: {
+title: "Absolutely Gorgeous",
+image: "image6.png",
+description: "Description.",
+song: "https://suno.com/embed/8ef498c1-a0ce-4d62-90e2-c65417bb47a1"
+},
+
+7: {
+title: "Bad Bad Love",
+image: "image7.png",
+description: "Description.",
+song: "https://suno.com/embed/5a553028-8723-47d4-bb99-bbc26ecf830d"
+},
+
+8: {
+title: "My Relief",
+image: "image8.png",
+description: "My Relief.",
+song: "https://suno.com/embed/f82e3c23-bda0-4ff0-83ac-048615c9d458"
+},
+
+9: {
+title: "Take Me Back",
+image: "image9.png",
+description: "Description.",
+song: "https://suno.com/embed/9565deb0-0d1a-4064-a16e-e5bc956129bf"
+},
+
+10: {
+title: "Married to the Night",
+image: "image10.png",
+description: "Description.",
+song: "https://suno.com/embed/a90d1b2c-1755-4322-b8b5-ce24273c53eb"
+},
+
+11: {
+title: "Guilt On This Old Guitar",
+image: "image11.png",
+description: "Description.",
+song: "https://suno.com/embed/2cf56e97-bf44-4d01-873b-82c59494288e"
+},
+
+12: {
+title: "I'd Walk With You For Miles and Miles",
+image: "image12.png",
+description: "Description.",
+song: "https://suno.com/embed/9b56b92a-2ddc-4de8-b784-2bcd8f2043eb"
+},
+
+13: {
+title: "Onset Beach",
+image: "image13.png",
+description: "Description.",
+song: "https://suno.com/embed/90431bf6-eb3b-4db6-81a9-278dbfb3ae7f"
+},
+
+14: {
+title: "Please Don't Forget Me",
+image: "image14.png",
+description: "Description.",
+song: "https://suno.com/embed/933ba75f-ce2c-4e40-b0a9-127a6bfdae75"
+},
+
+15: {
+title: "Gypsy Soul",
+image: "image15.png",
+description: "Description.",
+song: "https://suno.com/embed/ed248353-3ee2-4a1d-8c12-e3ad815e6b9b"
+},
+
+16: {
+title: "Armor In The Ink",
+image: "image16.png",
+description: "Resilience becoming visible light.",
+song: "https://suno.com/embed/8f458e64-7b17-40ef-90e9-09f9cb52372f"
+},
+
+17: {
+title: "Double Fist Two Step",
+image: "image17.png",
+description: "Description.",
+song: "https://suno.com/embed/87cb06cf-ac28-48dd-bf8a-f4cf7ef91ab1"
+},
+
+18: {
+title: "Ghettoizing and Fantasizing",
+image: "image18.png",
+description: "Description.",
+song: "https://suno.com/embed/0ac14bb9-b6ab-4f78-8c73-3b86b195b06e"
+},
+
+19: {
+title: "Vroom Vroom Anthem",
+image: "image19.png",
+description: "Description.",
+song: "https://suno.com/embed/999e32e1-174d-40cf-9b5a-01e303d33164"
+},
+
+20: {
+title: "Siren in the Undertow",
+image: "image20.png",
+description: "Description.",
+song: "https://suno.com/embed/de9f862f-6f30-40d3-83f2-94ef57c513d2"
+},
+
+21: {
+title: "Isaiah Mysaiah",
+image: "image21.png",
+description: "Description.",
+song: "https://suno.com/embed/5d1e4d90-5572-48cd-bd63-700091ce4ef3"
+},
+
+22: {
+title: "Breath Life Again",
+image: "image22.png",
+description: "Description.",
+song: "https://suno.com/embed/87234781-9f02-4830-8267-5a2d94bd93c6"
+},
+
+23: {
+title: "Can I Make Your Heart Right",
+image: "image23.png",
+description: "Description.",
+song: "https://suno.com/embed/c483c062-8d1b-47c7-a37e-0d24971a8dda"
+},
+
+24: {
+title: "Your Love Heals",
+image: "image24.png",
+description: "XXXX",
+song: "https://suno.com/embed/aef37e70-b537-4f89-864d-bba18c9f9d20"
+},
+
+25: {
+title: "Inner Peace",
+image: "image25.png",
+description: " ",
+song: "https://suno.com/embed/0672ee4e-553a-4aa7-92b5-2d23ff627869"
+},
+
+26: {
+title: "Beneath the Surface",
+image: "image26.png",
+description: "XXXX",
+song: "https://suno.com/embed/eb9a0492-97d7-4231-bb0a-42ce4bd68eef"
+},
+
+27: {
+title: "Unbreakable",
+image: "image27.png",
+description: "XXXX",
+song: "https://suno.com/embed/PUT-SONG-ID-HERE"
+},
+
+};
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+
+if (artworkData[id]) {
+
+document.title = artworkData[id].title;
+
+document.getElementById("title").innerText =
+artworkData[id].title;
+
+document.getElementById("artImage").src =
+artworkData[id].image;
+
+document.getElementById("description").innerText =
+artworkData[id].description;
+
+document.getElementById("songFrame").src =
+artworkData[id].song;
+
+}
+
+/* ===== FIREBASE LIKES ===== */
+
+const heartBtn =
+document.getElementById("heartBtn");
+
+const likeCount =
+document.getElementById("likeCount");
+
+const likeRef =
+ref(db, "likes/item_" + id);
+
+let hasLiked =
+localStorage.getItem("liked_item_" + id)
+=== "true";
+
+heartBtn.innerText =
+hasLiked ? "❤️" : "🤍";
+
+onValue(likeRef, (snapshot) => {
+
+    const likes =
+    snapshot.val() || 0;
+
+    likeCount.innerText =
+    likes;
+
+});
+
+heartBtn.addEventListener("click", () => {
+
+    if (!hasLiked) {
+
+        runTransaction(
+            likeRef,
+            current =>
+            (current || 0) + 1
+        );
+
+        localStorage.setItem(
+            "liked_item_" + id,
+            "true" 
+        );
+
+        heartBtn.innerText =
+        "🤍";
+
+        hasLiked = true;
+
+        createHeartExplosion();
+
+    } else {
+
+        runTransaction(
+            likeRef,
+            current =>
+            Math.max(
+                0,
+                (current || 0) - 1
+            )
+        );
+
+        localStorage.removeItem(
+            "liked_item_" + id
+        );
+
+        heartBtn.innerText =
+        "🖤";
+
+        hasLiked = false;
+
+    }
+
+});
+
+/* ===== FLOATING HEARTS ===== */
+
+function createHeartExplosion() {
+
+    const container =
+    document.querySelector(
+        ".like-section"
+    );
+
+    const heartCount = 50;
+
+    for(let i=0;i<heartCount;i++) {
+
+        const heart =
+        document.createElement("div");
+
+        heart.className =
+        "floating-heart";
+
+        heart.innerText =
+        "❤️";
+
+        const angle =
+        (i / heartCount)
+        * 2
+        * Math.PI
+        + (Math.random() * .4 - .2);
+
+        const burstDistance =
+        200 + Math.random() * 40;
+
+        const xBurst =
+        Math.cos(angle)
+        * burstDistance;
+
+        const yBurst =
+        Math.sin(angle)
+        * burstDistance
+        + 10;
+
+        const xFloat =
+        xBurst
+        + (Math.random()*100-50);
+
+        const yFloat =
+        yBurst
+        + (Math.random() * 300 - 150);
+
+        heart.style.setProperty(
+            "--x-burst",
+            `${xBurst}px`
+        );
+
+        heart.style.setProperty(
+            "--y-burst",
+            `${yBurst}px`
+        );
+
+        heart.style.setProperty(
+            "--x-float",
+            `${xFloat}px`
+        );
+
+        heart.style.setProperty(
+            "--y-float",
+            `${yFloat}px`
+        );
+
+        heart.style.setProperty(
+            "--rot",
+            `${Math.random()*90-45}deg`
+        );
+
+        container.appendChild(
+            heart
+        );
+
+        setTimeout(
+            () => heart.remove(),
+            6800
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

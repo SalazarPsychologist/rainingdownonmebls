@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raining Down On Me</title>
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" href="image1.png">
+  <link href="https://fonts.googleapis.com" rel="stylesheet">
+  <style>
+*{
+    box-sizing:border-box;
+}    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #ffffff;
+      --accent: #ffd700;
+      --border: #333;
+    }
+    body {
+      text-align: center;
+	background: var(--bg);
+      color: var(--text);
+      font-family: 'Varela Round', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x:hidden;
+width:100%;
+    }
+    .neon-gold-streaks {
+      background: linear-gradient(
+        120deg, #ffd700 0%, #ffb700 20%, #b76e79 40%, 
+        #ff66cc 50%, #b76e79 60%, #ffd700 80%, #ffd700 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: swirlStreaks 4s linear infinite;
+      filter: drop-shadow(0 0 2px rgba(255,215,0,0.6));
+    }
+    @keyframes swirlStreaks {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+    
+    /* MAIN CONTAINER CONTROLS FOR TOP CORNERS */
+    .gallery-controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 40px;
+      box-sizing: border-box;
+      gap: 20px;
+    }
+    .top-row { margin-top: 50px; margin-bottom: 50px; }
+    .bottom-row { margin-top: 70px; margin-bottom: 70px; }
+
+    #main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .gallery-controls-row header { flex-grow: 0; text-align: center; }
+    header h1 {
+	text-align:center;
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2rem, 6vw, 3rem);
+      margin: 0;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5), 0 0 15px rgba(183, 110, 121, 0.6), 0 0 30px rgba(255, 102, 204, 0.4);
+    }
+.gallery-nav{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    width:100%;
+    margin:20px auto;
+}
+
+.grid-container{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(280px,340px));
+
+    justify-content:center;
+
+    width:100%;
+    max-width:1200px;
+
+    margin:0 auto;
+    padding:0 15px;
+
+    box-sizing:border-box;
+}
+    .audio-wrapper {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto 40px auto;
+            background: var(--card);
+            border: 4px solid var(--accent);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 8px 8px 0px var(--text);
+        }
+        
+
+    .audio-wrapper iframe { display: block; border: none; width: 100%; }
+    .grid-container{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(280px,340px));
+
+    justify-content:center;
+
+    gap:30px;
+
+    width:100%;
+
+    max-width:1200px;
+
+    margin:20px auto;
+
+    padding:0 15px;
+
+    box-sizing:border-box;
+}
+    .photo-tile {
+      background: var(--card);
+      border-radius: 25px;
+      border: 5px solid var(--text);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+    .photo-tile:hover { transform: translateY(-8px); border-color: var(--accent); }
+    .photo-tile img { width: 100%; height: 500px; object-fit: cover; display: block; }
+    .btn-clear {
+      background: transparent;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 20px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      transition: 0.3s;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .btn-clear:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+    .enlarge-btn { position: absolute; top: 15px; right: 15px; padding: 8px 15px; font-size: 0.8rem; z-index: 10; text-decoration: none; }
+    .back-btn { padding: 12px 30px; font-size: 1rem; margin: 0; }
+    
+    .playlist-btn {
+      background: transparent;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 20px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      transition: 0.3s;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+.playlist-btn { padding: 12px 30px; font-size: 1rem; margin: 0; }
+    .playlist-btn:hover { transform: scale(1.05); }
+    .tile-info { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; text-align: center; }
+    .photo-tile.active .tile-info { max-height: 300px; padding: 25px; border-top: 3px dashed var(--border); }
+    #lightbox { display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; cursor: zoom-out; }
+    #lightbox img { max-width: 90%; max-height: 90%; border: 4px solid white; border-radius: 10px; }
+
+    /* BASE STYLE FOR CURVED LYRIC SVGs */
+    .dream-lyric { position: fixed; width: clamp(280px, 35vw, 500px); height: auto; z-index: 6; pointer-events: none; overflow: visible; }
+    .dream-lyric text { font-family: 'Varela Round', sans-serif; font-size: 22px; fill: rgba(255, 255, 255, 0.48); filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.15)); }
+    .lyric1 { top: 18%; left: 8%; animation: lyricDriftA 22s ease-in-out infinite; }
+    .lyric2 { top: 32%; right: 10%; animation: lyricDriftB 26s ease-in-out infinite; }
+    .lyric3 { bottom: 32%; left: 5%; animation: lyricDriftA 24s ease-in-out infinite; }
+    .lyric4 { bottom: 20%; right: 8%; animation: lyricDriftB 28s ease-in-out infinite; }
+    @keyframes lyricDriftA { 0% { transform: translate(0px, 0px) rotate(-3deg); } 50% { transform: translate(15px, -20px) rotate(-1deg); } 100% { transform: translate(0px, 0px) rotate(-3deg); } }
+    @keyframes lyricDriftB { 0% { transform: translate(0px, 0px) rotate(4deg); } 50% { transform: translate(-20px, -15px) rotate(2deg); } 100% { transform: translate(0px, 0px) rotate(4deg); } }
+
+    /* ======================================= DREAMSCAPE LANDING PAGE ======================================= */
+    #dreamscape {
+      position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+      inset: 0;
+      z-index: 50000;
+      background: radial-gradient(circle at center, rgba(255,215,0,.08), transparent 60%), #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+overflow-x: hidden;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 2s ease, visibility 2s ease;
+    }
+    
+    /* CRITICAL FIX: Forces element layout away instantly if user has checked in */
+    #dreamscape.hidden {
+      opacity: 0 !important;
+      pointer-events: none;
+      visibility: hidden !important;
+    }
+    
+    .dream-content { position:relative;
+z-index:10; text-align: center; width:100%;
+    max-width:1200px;
+    padding:30px 15px;
+    margin:auto; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box; }
+    .dream-title { font-family: 'Fredoka One', cursive; font-size: clamp(3rem, 8vw, 5rem); margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,215,0,.5), 0 0 30px rgba(255,102,204,.3), 0 0 60px rgba(255,215,0,.25); }
+    .dream-image {
+  width:min(95vw,1200px);
+    max-width:100%;
+  height: auto;
+
+  border-radius: 25px;
+  border: 5px solid white;
+
+  box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+
+  opacity: 1;
+
+  position: relative;
+  z-index: 2;
+}
+    .dream-word { position: absolute; color: white; opacity: .99; font-size: clamp(1.2rem, 2.5vw, 2.2rem); letter-spacing: 2px; animation: drift 18s ease-in-out infinite; z-index: 9; /* Forces the words to sit safely on top of the background image */
+  text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.9); /* High contrast shadow fallback */}
+    .word1 { top: 8%; left: 10%; } .word2 { top: 20%; right: 8%; } .word3 { top: 42%; left: 6%; } .word4 { top: 65%; left: 15%; } .word5 { top: 12%; left: 50%; } .word6 { top: 78%; right: 10%; } .word7 { top: 55%; right: 15%; } .word8 { top: 32%; left: 70%; } .word9 { bottom: 12%; left: 45%; } .word10 { top: 5%; right: 35%; }
+    @keyframes drift { 0% { transform: translateY(0px); opacity: .45; } 50% { transform: translateY(-15px); opacity: .45; } 100% { transform: translateY(0px); opacity: .45; } }
+     
+    .dream-glow {
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle, rgba(255,215,0,.06), transparent 60%);
+    animation: rotateGlow 60s linear infinite;
+
+    pointer-events:none;
+    z-index:0;
+}
+    @keyframes rotateGlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+.arrow-portal-btn{
+
+    position:sticky;
+    top:15px;
+
+    align-self:flex-end;
+
+    background:transparent;
+    color:rgba(255,255,255,.75);
+    border:5px solid rgba(255,255,255,.25);
+    border-radius:8px;
+    padding:8px 25px;
+    font-size:.9rem;
+    font-family:'Varela Round',sans-serif;
+    font-weight:500;
+    box-shadow:none;
+}
+
+.arrow-portal-btn:hover{
+    background:white;
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+
+.album-description{
+    max-width:900px;
+    margin:40px auto;
+    padding:0 20px;
+    font-size:1.3rem;
+    line-height:1.8;
+    text-align:center;
+}
+
+.theme-cloud{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:16px;
+    max-width:1100px;
+    margin:50px auto;
+    padding:20px;
+}
+
+.theme-cloud span{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,215,0,.3);
+    border-radius:999px;
+    padding:12px 20px;
+    font-size:1rem;
+}
+
+.trailer-transcript{
+    max-width:900px;
+    margin:60px auto;
+    padding:0 25px 100px;
+    line-height:1.8;
+    text-align:left;
+}
+
+.trailer-player{
+    margin-top:40px;
+}
+
+.dream-themes{
+    position:relative;
+    width:100%;
+    max-width:1100px;
+    margin:60px auto;
+    padding:40px 20px;
+    min-height:280px;
+}
+
+.floating-word{
+    position:absolute;
+    color:white;
+    opacity:.65;
+    font-size:clamp(1rem,2vw,1.8rem);
+    text-shadow:0 0 10px rgba(255,215,0,.25);
+    animation:drift 18s ease-in-out infinite;
+}
+
+.floating-word:nth-child(1){
+    top:20px;
+    left:5%;
+}
+
+.floating-word:nth-child(2){
+    top:80px;
+    right:10%;
+}
+
+.floating-word:nth-child(3){
+    top:170px;
+    left:15%;
+}
+
+.floating-word:nth-child(4){
+    top:250px;
+    right:20%;
+}
+
+.floating-word:nth-child(5){
+    top:330px;
+    left:8%;
+}
+
+.floating-word:nth-child(6){
+    top:120px;
+    left:40%;
+}
+
+.floating-word:nth-child(7){
+    top:390px;
+    right:8%;
+}
+
+.floating-word:nth-child(8){
+    top:450px;
+    left:30%;
+}
+
+.floating-word:nth-child(9){
+    top:210px;
+    left:55%;
+}
+
+.floating-word:nth-child(10){
+    top:220px;
+    right:20%;
+}
+
+.dream-lyric-section{
+    display:block;
+    width:100%;
+    margin:50px auto;
+    overflow:visible;
+}
+
+.dream-lyric-section text{
+    fill:rgba(255,255,255,.45);
+    font-size:22px;
+    font-family:'Varela Round',sans-serif;
+}
+
+</style>
+  <!-- INTERCEPT ELEMENT VISIBILITY BEFORE RENDER -->
+  <script>
+    if (localStorage.getItem("hasEnteredGallery") === "true") {
+      document.documentElement.classList.add("gallery-mode");
+      // Inject a dynamic CSS rule to hide the splash screen before layout engine compiles elements
+      const style = document.createElement('style');
+      style.innerHTML = '#dreamscape { display: none !important; visibility: hidden !important; opacity: 0 !important; }';
+      document.head.appendChild(style);
+    }
+  </script>
+</head>
+<body>
+
+  <!-- DREAMSCAPE LANDING PAGE -->
+  <div id="dreamscape">
+
+    <div class="dream-glow"></div>
+
+ <div class="dream-content">
+
+    <!-- ENTER GALLERY BUTTON -->
+    <button id="portal-button"
+        class="arrow-portal-btn"
+        aria-label="Enter Gallery">
+    Gallery
+</button>
+
+    <!-- HERO IMAGE -->
+    <img src="image.png" class="dream-image">
+
+    <!-- TRAILER -->
+    <div class="audio-wrapper trailer-player">
+      <iframe src="https://suno.com/embed/92895633-106a-4645-a706-4feda8b90ec3" width="760" height="240" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"><a href="https://suno.com/embed/92895633-106a-4645-a706-4feda8b90ec3">Listen on Suno</a></iframe>
+    </div>
+      
+
+    <!-- TAGLINE -->
+    <div class="album-description">
+
+        An album for anyone fighting to become whole again,
+        proving that the rain isn't what washes us away—
+        it’s what brings us back to life.
+
+    </div>
+
+   <!-- FLOATING WORDS + CURVED PHRASES SECTION -->
+
+<div class="dream-themes">
+
+    <div class="floating-word">Can You Have My All?</div>
+    <div class="floating-word">Please Don't Forget Me</div>
+    <div class="floating-word"></div>
+    <div class="floating-word">Empty Hands</div>
+
+    <div class="floating-word">I'd Walk With You For Miles and Miles</div>
+    <div class="floating-word">Take Me Back</div>
+    <div class="floating-word">Broken Promises</div>
+    <div class="floating-word"></div>
+
+    <div class="floating-word"></div>
+    <div class="floating-word"></div>
+
+    <svg class="dream-lyric-section" viewBox="0 0 500 100">
+        <path id="themeCurve1"
+              d="M 10,60 Q 140,10 250,50 T 490,40"
+              fill="none"/>
+        <text>
+            <textPath href="#themeCurve1">
+                Some wounds become songs...
+            </textPath>
+        </text>
+    </svg>
+
+    <svg class="dream-lyric-section" viewBox="0 0 500 100">
+        <path id="themeCurve2"
+              d="M 10,40 Q 180,90 320,20 T 490,50"
+              fill="none"/>
+        <text>
+            <textPath href="#themeCurve2">
+                Some tears become rivers...
+            </textPath>
+        </text>
+    </svg>
+
+    <svg class="dream-lyric-section" viewBox="0 0 500 100">
+        <path id="themeCurve3"
+              d="M 10,60 Q 120,10 260,55 T 490,35"
+              fill="none"/>
+        <text>
+            <textPath href="#themeCurve3">
+                Some losses become light...
+            </textPath>
+        </text>
+    </svg>
+
+    <svg class="dream-lyric-section" viewBox="0 0 500 100">
+        <path id="themeCurve4"
+              d="M 10,45 Q 170,90 300,15 T 490,45"
+              fill="none"/>
+        <text>
+            <textPath href="#themeCurve4">
+                And sometimes healing arrives quietly...
+            </textPath>
+        </text>
+    </svg>
+
+</div>
+
+    <!-- TRANSCRIPT -->
+    <div class="trailer-transcript">
+
+        <h2>Album Trailer</h2>
+
+        <p>
+            Raining Down On Me is an album for anyone who has ever lost something they loved, searched for their way home, or fought to become whole again. It is for anyone who has discovered that even after heartbreak, there is still beauty waiting on the other side of the storm.
+Sometimes the rain isn't what washes us away. Sometimes it's what brings us back to life.
+The album weaves together intimate acoustic reflections, high-energy anthems, nostalgic love stories, and deeply personal narratives. It uncovers love, loss, and renewal.
+Some songs tell stories of romance—of unforgettable summers, moonlit promises, broken hearts, and memories that refuse to fade. Others travel deeper, into the landscapes of grief, resilience, identity, and transformation.
+Beneath every story lies the same question:
+What carries us through the storms of life?
+Again and again, the answer emerges through the music—in love, in hope, in memory, in faith, in courage, and in the quiet light that never fully goes out.
+The rain becomes a symbol of grace. The ocean becomes a symbol of struggle and survival. The light becomes a symbol of hope. The brokenness becomes a place of transformation and new life.
+Raining Down On Me is an album for anyone who has ever lost something they loved, searched for their way home, fought to become whole again, or discovered that even after heartbreak, there is still beauty waiting on the other side of the storm.
+Because sometimes the rain isn't what washes us away.
+Sometimes it's what brings us back to life.
+
+        </p>
+
+    </div>
+
+</div>
+
+    </div> 
+  </div>
+
+<!-- MAIN GALLERY -->
+<header>
+    <h1 class="neon-gold-streaks" style="margin-top: 0px; margin-bottom: 20px;">
+        Raining Down On Me
+    </h1>
+</header>
+
+<div class="gallery-nav">
+
+    <button class="btn-clear back-btn"> ⬅ BACK </button> 
+
+    <a href="https://suno.com/playlist/e36042dc-b362-4d50-8e20-43a0ca31f14b?sh=Y4e8kyExbyNOlSxB"
+       target="_blank"
+       class="playlist-btn">
+        PLAYLIST 🎵
+    </a>
+
+</div>
+    <!-- SINGLE SONG EMBED -->
+    <div class="audio-wrapper">
+      <iframe src="https://suno.com/embed/a7222d21-fd9d-4103-87c4-245fdf83e669" width="760" height="240" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"><a href="https://suno.com/song/90431bf6-eb3b-4db6-81a9-278dbfb3ae7f">Listen on Suno</a></iframe>
+    </div>
+    <div class="grid-container">
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=1"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image1.png" alt="Part 1">
+        <div class="tile-info"><h3>The Quiet Guard</h3><p>Finding balance in silence.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=2"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image2.png" alt="Part 2">
+        <div class="tile-info"><h3>Lips Like Rose Petals</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=3"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image3.png" alt="Part 3">
+        <div class="tile-info"><h3>Empty Hands</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=4"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image4.png" alt="Part 4">
+        <div class="tile-info"><h3>Can You Have My All?</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=5"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image5.png" alt="Part 5">
+        <div class="tile-info"><h3>Magnificent</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=6"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image6.png" alt="Part 6">
+        <div class="tile-info"><h3>Absolutely Gorgeous</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=7"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image7.png" alt="Part 7">
+        <div class="tile-info"><h3>Bad Bad Love</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=8"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image8.png" alt="Part 8">
+        <div class="tile-info"><h3>My Relief</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=9"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image9.png" alt="Part 9">
+        <div class="tile-info"><h3>Take Me Back</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=10"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image10.png" alt="Part 10">
+        <div class="tile-info"><h3>Married to the Night</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=11"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image11.png" alt="Part 11">
+        <div class="tile-info"><h3>Guilt On This Old Guitar</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=12"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image12.png" alt="Part 12">
+        <div class="tile-info"><h3>I'd Walk With You For Miles and Miles</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=13"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image13.png" alt="Part 13">
+        <div class="tile-info"><h3>Onset Beach</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=14"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image14.png" alt="Part 14">
+        <div class="tile-info"><h3>Please Don't Forget Me</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=15"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image15.png" alt="Part 15">
+        <div class="tile-info"><h3>Gypsy Soul</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=16"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image16.png" alt="Part 16">
+        <div class="tile-info"><h3>Armor In The Ink</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=17"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image17.png" alt="Part 17">
+        <div class="tile-info"><h3>Double Fist Two Step</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=18"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image18.png" alt="Part 18">
+        <div class="tile-info"><h3>Ghettoizing and Fantasizing</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=19"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image19.png" alt="Part 19">
+        <div class="tile-info"><h3>Vroom Vroom Anthem</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=20"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image20.png" alt="Part 20">
+        <div class="tile-info"><h3>Siren in the Undertow</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=21"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image21.png" alt="Part 21">
+        <div class="tile-info"><h3>Isaiah Mysaiah</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=22"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image22.png" alt="Part 22">
+        <div class="tile-info"><h3>Breath Life Again</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=23"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image23.png" alt="Part 23">
+        <div class="tile-info"><h3>Can I Make Your Heart Right</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=24"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image24.png" alt="Part 24">
+        <div class="tile-info"><h3>Your Love Heals</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=25"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image25.png" alt="Part 25">
+        <div class="tile-info"><h3>Inner Peace</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=26"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image26.png" alt="Part 26">
+        <div class="tile-info"><h3>Beneath the Surface</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+<div class="photo-tile" onclick="this.classList.toggle('active')">
+<a href="artwork.html?id=27"
+   class="btn-clear enlarge-btn"
+   onclick="event.stopPropagation();">
+         🎵 🎧 🎵     
+</a>
+<img src="image27.png" alt="Part 27">
+        <div class="tile-info"><h3>Unbreakable</h3><p>DESCRIPTION.</p></div>
+      </div>
+
+    </div>
+
+   <div class="gallery-nav" style="margin-top: 20px; margin-bottom: 20px;">
+
+    <button class="btn-clear back-btn"> ⬅ BACK </button> 
+
+    <a href="https://suno.com/playlist/e36042dc-b362-4d50-8e20-43a0ca31f14b?sh=Y4e8kyExbyNOlSxB"
+       target="_blank"
+       class="playlist-btn">
+        PLAYLIST 🎵
+    </a>
+
+  </div> <!-- Closes #main-content or your grid-container -->
+
+  <!-- LIGHTBOX MODAL --> 
+  <div id="lightbox" onclick="this.style.display='none'"> 
+    <img id="lightbox-img" src=""> 
+  </div>
+
+ <script> 
+document.addEventListener("DOMContentLoaded", () => { 
+  const dreamscape = document.getElementById("dreamscape"); 
+  const portalBtn = document.getElementById("portal-button"); 
+  const backBtns = document.querySelectorAll(".back-btn"); 
+
+  // 1. CHECK STATUS ON REFRESH
+  if (localStorage.getItem("hasEnteredGallery") === "true") { 
+    if (dreamscape) dreamscape.style.display = "none"; 
+  } 
+
+  // 2. ENTER BUTTON CLICK
+  if (portalBtn && dreamscape) { 
+    portalBtn.addEventListener("click", () => { 
+      dreamscape.classList.add("hidden"); 
+      localStorage.setItem("hasEnteredGallery", "true"); 
+      
+      setTimeout(() => { 
+        dreamscape.style.display = "none"; 
+      }, 2000); 
+    }); 
+  } 
+
+  // 3. BACK BUTTON CLICK
+  backBtns.forEach(btn => {
+    btn.addEventListener("click", () => { 
+      localStorage.removeItem("hasEnteredGallery"); 
+      if (dreamscape) {
+        dreamscape.style.display = "flex"; 
+        dreamscape.style.visibility = "visible"; 
+        
+        setTimeout(() => { 
+          dreamscape.classList.remove("hidden"); 
+        }, 50); 
+      }
+    }); 
+  });
+}); /* <--- Clean closing of DOMContentLoaded */
+
+// Lightbox Image Trigger function
+function openLightbox(src, event) { 
+  if (event) event.stopPropagation(); 
+  document.getElementById('lightbox-img').src = src; 
+  document.getElementById('lightbox').style.display = 'flex'; 
+} 
+</script>
+</body> 
+</html>
